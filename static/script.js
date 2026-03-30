@@ -29,42 +29,72 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentStep = 1;
     let generatedFiles = null;
 
-    // ---------- DANH SÁCH BIOME BEDROCK 1.20.5+ ----------
+    // ---------- DANH SÁCH BIOME BEDROCK EDITION (Chuẩn Minecraft Bedrock) ----------
     const BIOME_LIST = [
-        "plains", "sunflower_plains", "snowy_plains", "ice_spikes", "meadow", "cherry_grove",
-        "forest", "flower_forest", "birch_forest", "old_growth_birch_forest", "dark_forest",
-        "taiga", "snowy_taiga", "old_growth_pine_taiga", "old_growth_spruce_taiga", "grove",
-        "jungle", "sparse_jungle", "bamboo_jungle",
-        "windswept_hills", "windswept_gravelly_hills", "windswept_forest", "stony_peaks",
-        "jagged_peaks", "frozen_peaks", "snowy_slopes",
-        "desert", "savanna", "savanna_plateau", "windswept_savanna", "badlands",
-        "wooded_badlands", "eroded_badlands",
-        "swamp", "mangrove_swamp",
-        "ocean", "deep_ocean", "cold_ocean", "deep_cold_ocean", "frozen_ocean",
-        "deep_frozen_ocean", "lukewarm_ocean", "deep_lukewarm_ocean", "warm_ocean",
-        "river", "frozen_river", "beach", "snowy_beach", "stony_shore",
-        "dripstone_caves", "lush_caves", "deep_dark",
-        "mushroom_fields", "the_void",
-        "nether_wastes", "soul_sand_valley", "crimson_forest", "warped_forest", "basalt_deltas",
-        "the_end", "end_highlands", "end_midlands", "small_end_islands", "end_barrens"
+        // Overworld - Plains
+        "plains", "sunflower_plains", "ice_plains", "ice_mountains", "ice_plains_spikes",
+        // Overworld - Forest
+        "forest", "forest_hills", "flower_forest", "birch_forest", "birch_forest_hills",
+        "birch_forest_mutated", "birch_forest_hills_mutated", "roofed_forest", "roofed_forest_mutated", "pale_garden",
+        // Overworld - Jungle
+        "jungle", "jungle_hills", "jungle_mutated", "jungle_edge", "jungle_edge_mutated",
+        "bamboo_jungle", "bamboo_jungle_hills",
+        // Overworld - Taiga
+        "taiga", "taiga_hills", "taiga_mutated", "cold_taiga", "cold_taiga_hills",
+        "cold_taiga_mutated", "mega_taiga", "mega_taiga_hills", "redwood_taiga_mutated",
+        "redwood_taiga_hills_mutated",
+        // Overworld - Mountain
+        "extreme_hills", "extreme_hills_plus_trees", "extreme_hills_mutated",
+        "extreme_hills_plus_trees_mutated", "extreme_hills_edge",
+        // Overworld - Savanna & Desert
+        "savanna", "savanna_plateau", "savanna_mutated", "savanna_plateau_mutated",
+        "desert", "desert_hills", "desert_mutated",
+        // Overworld - Badlands
+        "mesa", "mesa_plateau", "mesa_plateau_mutated", "mesa_plateau_stone",
+        "mesa_plateau_stone_mutated", "mesa_bryce",
+        // Overworld - Water
+        "ocean", "deep_ocean", "frozen_ocean", "deep_frozen_ocean", "cold_ocean",
+        "deep_cold_ocean", "lukewarm_ocean", "deep_lukewarm_ocean", "warm_ocean",
+        "deep_warm_ocean", "legacy_frozen_ocean", "river", "frozen_river",
+        // Overworld - Beach & Shore
+        "beach", "stone_beach", "cold_beach",
+        // Overworld - Special
+        "meadow", "grove", "snowy_slopes", "jagged_peaks", "frozen_peaks", "stony_peaks",
+        "mushroom_island", "mushroom_island_shore", "swampland", "swampland_mutated",
+        "mangrove_swamp", "lush_caves", "dripstone_caves", "deep_dark", "cherry_grove",
+        // Nether
+        "hell", "crimson_forest", "warped_forest", "soulsand_valley", "basalt_deltas",
+        // End
+        "the_end"
     ].sort();
 
-    // Nhóm biome
+    // Nhóm biome (tương ứng với Bedrock Edition)
     const BIOME_GROUPS = {
-        "forest": ["forest", "flower_forest", "birch_forest", "old_growth_birch_forest", "dark_forest", "taiga", "old_growth_pine_taiga", "old_growth_spruce_taiga", "grove"],
-        "jungle": ["jungle", "sparse_jungle", "bamboo_jungle"],
-        "plains": ["plains", "sunflower_plains", "meadow", "cherry_grove"],
-        "snowy": ["snowy_plains", "ice_spikes", "snowy_taiga", "grove", "snowy_slopes", "frozen_peaks", "frozen_ocean", "deep_frozen_ocean", "frozen_river", "snowy_beach"],
-        "mountain": ["windswept_hills", "windswept_gravelly_hills", "windswept_forest", "stony_peaks", "jagged_peaks", "frozen_peaks", "snowy_slopes"],
-        "desert": ["desert", "badlands", "wooded_badlands", "eroded_badlands"],
-        "savanna": ["savanna", "savanna_plateau", "windswept_savanna"],
-        "swamp": ["swamp", "mangrove_swamp"],
-        "ocean": ["ocean", "deep_ocean", "cold_ocean", "deep_cold_ocean", "frozen_ocean", "deep_frozen_ocean", "lukewarm_ocean", "deep_lukewarm_ocean", "warm_ocean"],
+        "forest": ["forest", "forest_hills", "flower_forest", "birch_forest", "birch_forest_hills",
+                   "birch_forest_mutated", "birch_forest_hills_mutated", "roofed_forest", "roofed_forest_mutated", "pale_garden"],
+        "jungle": ["jungle", "jungle_hills", "jungle_mutated", "jungle_edge", "jungle_edge_mutated",
+                   "bamboo_jungle", "bamboo_jungle_hills"],
+        "plains": ["plains", "sunflower_plains"],
+        "snowy": ["ice_plains", "ice_mountains", "ice_plains_spikes", "cold_taiga", "cold_taiga_hills",
+                  "cold_taiga_mutated", "frozen_ocean", "deep_frozen_ocean", "frozen_river", "cold_beach"],
+        "mountain": ["extreme_hills", "extreme_hills_plus_trees", "extreme_hills_mutated",
+                     "extreme_hills_plus_trees_mutated", "extreme_hills_edge"],
+        "desert": ["desert", "desert_hills", "desert_mutated"],
+        "savanna": ["savanna", "savanna_plateau", "savanna_mutated", "savanna_plateau_mutated"],
+        "swamp": ["swampland", "swampland_mutated", "mangrove_swamp"],
+        "ocean": ["ocean", "deep_ocean", "cold_ocean", "deep_cold_ocean", "frozen_ocean", "deep_frozen_ocean",
+                  "lukewarm_ocean", "deep_lukewarm_ocean", "warm_ocean", "deep_warm_ocean", "legacy_frozen_ocean"],
         "river": ["river", "frozen_river"],
-        "beach": ["beach", "snowy_beach", "stony_shore"],
-        "cave": ["dripstone_caves", "lush_caves", "deep_dark"],
-        "nether": ["nether_wastes", "soul_sand_valley", "crimson_forest", "warped_forest", "basalt_deltas"],
-        "end": ["the_end", "end_highlands", "end_midlands", "small_end_islands", "end_barrens"]
+        "beach": ["beach", "stone_beach", "cold_beach"],
+        "cave": ["lush_caves", "dripstone_caves", "deep_dark"],
+        "taiga": ["taiga", "taiga_hills", "taiga_mutated", "mega_taiga", "mega_taiga_hills",
+                  "redwood_taiga_mutated", "redwood_taiga_hills_mutated"],
+        "nether": ["hell", "crimson_forest", "warped_forest", "soulsand_valley", "basalt_deltas"],
+        "end": ["the_end"],
+        "special": ["meadow", "grove", "snowy_slopes", "jagged_peaks", "frozen_peaks", "stony_peaks",
+                    "mushroom_island", "mushroom_island_shore", "cherry_grove"],
+        "badlands": ["mesa", "mesa_plateau", "mesa_plateau_mutated", "mesa_plateau_stone",
+                     "mesa_plateau_stone_mutated", "mesa_bryce"]
     };
 
     // State cho biome
@@ -116,11 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---------- Helper: Update start pool dropdown ----------
     function updateStartPoolDropdown() {
         let pid = poolIdInput.value.trim();
-        if (!pid) {
-            const namespace = 'myaddon';
-            const structName = structIdInput.value.trim() || 'my_structure';
-            pid = `${namespace}:${structName}_pool`;
-        }
         startPoolSelect.innerHTML = '';
         const option = document.createElement('option');
         option.value = pid;
@@ -128,24 +153,22 @@ document.addEventListener('DOMContentLoaded', () => {
         startPoolSelect.appendChild(option);
     }
 
+    // ---------- Helper: Update struct ref placeholder ----------
+    function updateStructRefPlaceholder() {
+        const structId = structIdInput.value.trim() || 'myaddon:my_structure';
+        document.querySelectorAll('.struct-ref').forEach(input => {
+            input.placeholder = structId;
+        });
+    }
+
     // ---------- Helper: Build request data ----------
     function buildRequestData() {
         // Template pool
         let finalPoolId = poolIdInput.value.trim();
-        if (!finalPoolId) {
-            const namespace = 'myaddon';
-            const structName = structIdInput.value.trim() || 'my_structure';
-            finalPoolId = `${namespace}:${structName}_pool`;
-        }
         const piecesArray = collectPieces();
 
         // Jigsaw structure
         let finalStructId = structIdInput.value.trim();
-        if (!finalStructId) {
-            const namespace = 'myaddon';
-            const structName = structIdInput.value.trim() || 'my_structure';
-            finalStructId = `${namespace}:${structName}`;
-        }
         const startPool = startPoolSelect.value;
         const maxDepth = parseInt(document.getElementById('max-depth').value);
         const terrainAdapt = document.getElementById('terrain-adapt').value;
@@ -198,11 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Structure set
         let finalSetId = setIdInput.value.trim();
-        if (!finalSetId) {
-            const namespace = 'myaddon';
-            const structName = structIdInput.value.trim() || 'my_structure';
-            finalSetId = `${namespace}:${structName}_set`;
-        }
         const spacing = parseInt(document.getElementById('spacing').value);
         const separation = parseInt(document.getElementById('separation').value);
         const spreadType = document.getElementById('spread-type').value;
@@ -375,6 +393,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (step === 2) {
             updateStartPoolDropdown();
         }
+        if (step === 3) {
+            updateStructRefPlaceholder();
+        }
         if (step === 4) {
             fetchGeneratedFiles().then(files => {
                 if (files) {
@@ -387,14 +408,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------- Validation functions ----------
     function validateStep1() {
+        const poolId = poolIdInput.value.trim();
         const pieces = collectPieces();
         let valid = true;
-        if (pieces.length === 0) {
-            showFieldError('pool-id', getTranslation('at_least_one_piece'));
+        
+        // Validate pool ID
+        if (!poolId) {
+            showFieldError('pool-id', getTranslation('pool_id_required') || 'Pool ID là bắt buộc');
+            valid = false;
+        } else if (!/^[a-z0-9_/\.]+:[a-z0-9_/\.]+$/.test(poolId)) {
+            showFieldError('pool-id', 'Pool ID không hợp lệ (ví dụ: my_addon:castle_pool)');
             valid = false;
         } else {
             clearFieldError('pool-id');
         }
+        
+        // Validate pieces
+        if (pieces.length === 0) {
+            showFieldError('pool-id', getTranslation('at_least_one_piece'));
+            valid = false;
+        } else {
+            if (poolId) clearFieldError('pool-id');
+        }
+        
         pieces.forEach((p, idx) => {
             const card = document.querySelectorAll('.piece-card')[idx];
             const locInput = card.querySelector('.piece-location');
@@ -416,33 +452,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function validateStep2() {
+        const structId = structIdInput.value.trim();
         const depth = parseInt(document.getElementById('max-depth').value);
         let valid = true;
+        
+        // Validate struct ID
+        if (!structId) {
+            showFieldError('struct-id', getTranslation('struct_id_required') || 'Structure ID là bắt buộc');
+            valid = false;
+        } else if (!/^[a-z0-9_/\.]+:[a-z0-9_/\.]+$/.test(structId)) {
+            showFieldError('struct-id', 'Structure ID không hợp lệ (ví dụ: myaddon:my_structure)');
+            valid = false;
+        } else {
+            clearFieldError('struct-id');
+        }
+        
+        // Validate depth
         if (isNaN(depth) || depth < 1 || depth > 20) {
             showFieldError('max-depth', 'Max depth phải từ 1 đến 20');
             valid = false;
         } else {
             clearFieldError('max-depth');
         }
+        
         return valid;
     }
 
     function validateStep3() {
+        const setId = setIdInput.value.trim();
         const spacing = parseInt(document.getElementById('spacing').value);
         const separation = parseInt(document.getElementById('separation').value);
         let valid = true;
+        
+        // Validate set ID
+        if (!setId) {
+            showFieldError('set-id', getTranslation('set_id_required') || 'Structure Set ID là bắt buộc');
+            valid = false;
+        } else if (!/^[a-z0-9_/\.]+:[a-z0-9_/\.]+$/.test(setId)) {
+            showFieldError('set-id', 'Structure Set ID không hợp lệ (ví dụ: myaddon:my_set)');
+            valid = false;
+        } else {
+            clearFieldError('set-id');
+        }
+        
+        // Validate spacing
         if (isNaN(spacing) || spacing <= 0) {
             showFieldError('spacing', 'Spacing phải là số dương');
             valid = false;
         } else {
             clearFieldError('spacing');
         }
+        
+        // Validate separation
         if (isNaN(separation) || separation <= 0) {
             showFieldError('separation', 'Separation phải là số dương');
             valid = false;
         } else {
             clearFieldError('separation');
         }
+        
+        // Validate separation < spacing/2
         if (valid && separation >= spacing / 2) {
             showFieldError('separation', 'Separation must be less than half of the spacing');
             valid = false;
@@ -655,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="form-group">
                 <label>${getTranslation('structure_path_label')}</label>
-                <input type="text" class="piece-location" placeholder="namespace:path/to/structure" required>
+                <input type="text" class="piece-location" placeholder="path/to/structure" required>
                 <div class="field-error"></div>
             </div>
             <div class="form-row">
@@ -713,8 +782,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('structures-list');
         const item = document.createElement('div');
         item.className = 'structure-item';
+        const structId = structIdInput.value.trim() || 'myaddon:my_structure';
         item.innerHTML = `
-            <input type="text" class="struct-ref" placeholder="myaddon:my_structure" value="">
+            <input type="text" class="struct-ref" placeholder="${structId}" value="">
             <input type="number" class="struct-weight" placeholder="Weight" value="1" min="1">
             <button type="button" class="remove-struct">✖</button>
         `;
@@ -751,9 +821,10 @@ document.addEventListener('DOMContentLoaded', () => {
     poolIdInput.addEventListener('input', updateStartPoolDropdown);
     structIdInput.addEventListener('input', () => {
         updateStartPoolDropdown();
+        updateStructRefPlaceholder();
         const structName = structIdInput.value.trim() || 'my_structure';
         if (!setIdInput.value.trim()) {
-            setIdInput.placeholder = `myaddon:${structName}_set`;
+            setIdInput.placeholder = `${structName}_set`;
         }
     });
 
@@ -766,6 +837,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---------- Initial setup ----------
     updateStartPoolDropdown();
+    updateStructRefPlaceholder();
     showStep(1);
     if (piecesList.children.length === 0) {
         addPieceBtn.click();
