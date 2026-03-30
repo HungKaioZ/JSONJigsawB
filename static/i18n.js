@@ -39,7 +39,7 @@ const i18nData = {
         dimension_padding_label: "Dimension Padding (blocks)",
         liquid_settings_label: "Liquid Settings",
         start_jigsaw_name_label: "Start Jigsaw Name (tùy chọn, điểm neo)",
-        start_jigsaw_name_ph: "dungeon_connector",
+        start_jigsaw_name_ph: "piece_connector",
 
         // Biome selection
         include_biomes: "Include Biomes",
@@ -187,14 +187,14 @@ const i18nData = {
 
         // Step 1: Template Pool
         create_template_pool: "Create Template Pool",
-        pool_id_label: "Pool ID (auto-gen if empty)",
+        pool_id_label: "Pool ID",
         pool_id_ph: "e.g., my_addon:castle_pool",
         add_piece: "+ Add Piece",
         add_piece_text: "Add Piece",
 
         // Step 2: Jigsaw Structure
         config_jigsaw_structure: "Configure Jigsaw Structure",
-        struct_id_label: "Structure ID (auto-gen)",
+        struct_id_label: "Structure ID",
         start_pool_label: "Start Pool (select from step 1)",
         max_depth_label: "Max Depth (1–20)",
         terrain_adapt_label: "Terrain Adaptation",
@@ -207,7 +207,7 @@ const i18nData = {
         dimension_padding_label: "Dimension Padding (blocks)",
         liquid_settings_label: "Liquid Settings",
         start_jigsaw_name_label: "Start Jigsaw Name (optional, anchor point)",
-        start_jigsaw_name_ph: "dungeon_connector",
+        start_jigsaw_name_ph: "Piece_connector",
 
         // Biome selection
         include_biomes: "Include Biomes",
@@ -222,7 +222,7 @@ const i18nData = {
 
         // Step 3: Structure Set
         config_structure_set: "Configure Structure Set (Spawn)",
-        set_id_label: "Structure Set ID (auto-gen)",
+        set_id_label: "Structure Set ID",
         spacing_label: "Spacing (chunks)",
         separation_label: "Separation (chunks)",
         spread_type_label: "Spread Type",
