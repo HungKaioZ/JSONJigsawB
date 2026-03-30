@@ -1,91 +1,41 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Jigsaw Structure Builder</title>
+    <title>Jigsaw Worldgen Generator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <body>
-    <div class="app">
+    <div class="app-container">
         <header>
-            <div class="header-title">
-                <h1>JSON Jigsaw Structure Builder</h1>
-            </div>
-
-            <nav class="main-nav">
-                <button class="nav-btn active" data-mode="wizard" data-i18n="json_builder">JSON Builder</button>
-                <button class="nav-btn" data-mode="processor" data-i18n="processor_builder">Processor Builder</button>
-            </nav>
-            <div class="lang-switch">
-                <button class="lang-btn" data-lang="vi" onclick="setLanguage('vi')" data-i18n="lang_vi">VI</button>
-                <button class="lang-btn" data-lang="en" onclick="setLanguage('en')" data-i18n="lang_en">EN</button>
-            </div>
+            <h1><i class="fas fa-puzzle-piece"></i> Jigsaw Structure Generator</h1>
+            <p>Tạo file worldgen cho cấu trúc Jigsaw trong Minecraft Bedrock</p>
         </header>
 
-        <!-- WIZARD MODE -->
-        <div class="wizard mode-wizard" id="wizard-mode">
-            <div class="step-indicators">
-                <div class="step active" data-step="1" data-i18n="step1">1. Bộ sưu tập mảnh ghép</div>
-                <div class="step" data-step="2" data-i18n="step2">2. Cấu trúc Jigsaw</div>
-                <div class="step" data-step="3" data-i18n="step3">3. Cấu hình sinh sản</div>
-                <div class="step" data-step="4" data-i18n="step4">4. Xem trước & Tải về</div>
-            </div>
+        <div class="wizard-tabs">
+            <button class="tab-btn active" data-tab="tab1">1. Cấu hình chính</button>
+            <button class="tab-btn" data-tab="tab2">2. Mảnh ghép (Template Pools)</button>
+            <button class="tab-btn" data-tab="tab3">3. Tùy chọn nâng cao</button>
+        </div>
 
-            <!-- STEP 1: Template Pool -->
-            <div class="step-content" id="step1">
-                <h2>📦 <span data-i18n="create_template_pool">Tạo Template Pool</span></h2>
-                <div class="form-group">
-                    <label data-i18n="pool_id_label">ID Pool (tự động nếu để trống)</label>
-                    <input type="text" id="pool-id" data-i18n-placeholder="pool_id_ph"
-                        placeholder="ví dụ: my_addon:castle_pool">
-                    <div class="field-error" data-for="pool-id"></div>
-                </div>
-
-                <div id="pieces-list"></div>
-                <button id="add-piece" class="btn-secondary" data-i18n="add_piece">+ <span data-i18n="add_piece_text">Thêm mảnh ghép</span></button>
-                <div id="total-weight-info" class="info-text"></div>
-
-                <div class="step-nav">
-                    <button class="btn-next" data-next="2" data-i18n="next_button">Tiếp theo →</button>
-                </div>
-            </div>
-
-            <!-- STEP 2: Jigsaw Structure -->
-            <div class="step-content" id="step2" style="display:none;">
-                <h2>🏛️ <span data-i18n="config_jigsaw_structure">Cấu hình Jigsaw Structure</span></h2>
-                <div class="form-group">
-                    <label data-i18n="struct_id_label">ID cấu trúc (tự động sinh)</label>
-                    <input type="text" id="struct-id" placeholder="myaddon:my_structure">
-                    <div class="field-error" data-for="struct-id"></div>
-                </div>
-                <div class="form-group">
-                    <label data-i18n="start_pool_label">Start Pool (chọn từ bước 1)</label>
-                    <select id="start-pool"></select>
-                </div>
-                <div class="form-row">
+        <form id="generator-form">
+            <!-- TAB 1: CẤU HÌNH CHÍNH -->
+            <div id="tab1" class="tab-content active">
+                <div class="form-grid">
                     <div class="form-group">
-                        <label data-i18n="max_depth_label">Max Depth (1–20)</label>
-                        <input type="number" id="max-depth" value="5" min="1" max="20">
-                        <div class="field-error" data-for="max-depth"></div>
+                        <label>Namespace <i class="fas fa-info-circle tooltip-icon" data-tooltip="Định danh duy nhất, ví dụ: myaddon"></i></label>
+                        <input type="text" name="namespace" required placeholder="myaddon">
                     </div>
                     <div class="form-group">
-                        <label data-i18n="terrain_adapt_label">Terrain Adaptation</label>
-                        <select id="terrain-adapt">
-                            <option value="beard_thin">beard_thin</option>
-                            <option value="bury">bury</option>
-                            <option value="encapsulate">encapsulate</option>
-                            <option value="beard_box">beard_box</option>
-                            <option value="none">none – no adaptation</option>
-                        </select>
+                        <label>Tên cấu trúc <i class="fas fa-info-circle tooltip-icon" data-tooltip="Dùng trong /locate và /place"></i></label>
+                        <input type="text" name="struct_name" required placeholder="my_dungeon">
                     </div>
                     <div class="form-group">
-                        <label data-i18n="step_label">Step</label>
-                        <select id="step">
-                            <option value="surface_structures">surface_structures</option>
+                        <label>Step <i class="fas fa-info-circle tooltip-icon" data-tooltip="Giai đoạn sinh thế giới"></i></label>
+                        <select name="step">
+                            <option value="surface_structures" selected>surface_structures</option>
                             <option value="underground_structures">underground_structures</option>
                             <option value="strongholds">strongholds</option>
                             <option value="raw_generation">raw_generation</option>
@@ -98,415 +48,215 @@
                             <option value="top_layer_modification">top_layer_modification</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Terrain Adaptation</label>
+                        <select name="terrain_adaptation">
+                            <option value="beard_thin" selected>beard_thin</option>
+                            <option value="none">none</option>
+                            <option value="bury">bury</option>
+                            <option value="beard_box">beard_box</option>
+                            <option value="encapsulate">encapsulate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Depth <i class="fas fa-info-circle tooltip-icon" data-tooltip="0-20, số lần mở rộng"></i></label>
+                        <input type="number" name="max_depth" value="10" min="0" max="20" step="1">
+                        <span class="validation-error" data-for="max_depth"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Jigsaw Name <i class="fas fa-info-circle tooltip-icon" data-tooltip="Điểm neo, giúp tránh lệch"></i></label>
+                        <input type="text" name="start_jigsaw_name" placeholder="dungeon_connector">
+                    </div>
+                    <div class="form-group">
+                        <label>Heightmap Projection</label>
+                        <select name="heightmap_projection">
+                            <option value="world_surface" selected>world_surface</option>
+                            <option value="ocean_floor">ocean_floor</option>
+                            <option value="none">none</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Biome Tag <i class="fas fa-info-circle tooltip-icon" data-tooltip="Cấu trúc chỉ sinh trong biome có tag này"></i></label>
+                        <input type="text" name="biome_tag" value="plains">
+                    </div>
                 </div>
 
-                <!-- Start Height -->
-                <div class="form-group">
-                    <label data-i18n="start_height_label">Start Height</label>
+                <div class="form-section">
+                    <h3>Start Height <i class="fas fa-info-circle tooltip-icon" data-tooltip="Độ cao bắt đầu sinh cấu trúc"></i></h3>
                     <div class="radio-group">
-                        <label><input type="radio" name="start_height_type" value="constant" checked> <span data-i18n="constant">Constant</span></label>
-                        <label><input type="radio" name="start_height_type" value="uniform"> <span data-i18n="uniform">Uniform</span></label>
+                        <label><input type="radio" name="start_height_type" value="constant" checked> Constant</label>
+                        <label><input type="radio" name="start_height_type" value="uniform"> Uniform</label>
                     </div>
-                    <div id="constant-height-fields">
+                    <div id="constant-height" class="height-fields">
                         <div class="inline-group">
-                            <select id="sh-anchor-type">
+                            <select name="start_height_anchor_type">
                                 <option value="absolute">absolute</option>
                                 <option value="above_bottom">above_bottom</option>
                                 <option value="below_top">below_top</option>
                                 <option value="from_sea">from_sea</option>
                             </select>
-                            <input type="number" id="sh-anchor-value" value="0">
+                            <input type="number" name="start_height_anchor_value" value="64">
                         </div>
                     </div>
-                    <div id="uniform-height-fields" style="display:none;">
+                    <div id="uniform-height" class="height-fields" style="display: none;">
                         <div class="inline-group">
                             <span>Min:</span>
-                            <select id="sh-min-type">
+                            <select name="start_height_min_type">
                                 <option value="absolute">absolute</option>
                                 <option value="above_bottom">above_bottom</option>
                                 <option value="below_top">below_top</option>
                                 <option value="from_sea">from_sea</option>
                             </select>
-                            <input type="number" id="sh-min-value" value="0">
+                            <input type="number" name="start_height_min_value" value="50">
                         </div>
                         <div class="inline-group">
                             <span>Max:</span>
-                            <select id="sh-max-type">
+                            <select name="start_height_max_type">
                                 <option value="absolute">absolute</option>
                                 <option value="above_bottom">above_bottom</option>
                                 <option value="below_top">below_top</option>
                                 <option value="from_sea">from_sea</option>
                             </select>
-                            <input type="number" id="sh-max-value" value="10">
+                            <input type="number" name="start_height_max_value" value="80">
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label data-i18n="heightmap_projection_label">Heightmap Projection</label>
-                    <select id="heightmap-projection">
-                        <option value="world_surface">world_surface</option>
-                        <option value="ocean_floor">ocean_floor</option>
-                        <option value="none">none</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="max_distance_label">Max Distance from Center (blocks)</label>
-                    <div class="form-row">
-                        <input type="number" id="max-distance-h" placeholder="Horizontal (1-128)" min="1" max="128"
-                            value="80">
-                        <input type="number" id="max-distance-v" placeholder="Vertical (>=1)" min="1" value="80">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="dimension_padding_label">Dimension Padding (blocks)</label>
-                    <div class="form-row">
-                        <input type="number" id="dim-pad-top" placeholder="Top" value="0" min="0">
-                        <input type="number" id="dim-pad-bottom" placeholder="Bottom" value="0" min="0">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="liquid_settings_label">Liquid Settings</label>
-                    <select id="liquid-settings">
-                        <option value="apply_waterlogging">apply_waterlogging</option>
-                        <option value="ignore_waterlogging">ignore_waterlogging</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="start_jigsaw_name_label">Start Jigsaw Name (tùy chọn, điểm neo)</label>
-                    <input type="text" id="start-jigsaw-name" data-i18n-placeholder="start_jigsaw_name_ph" placeholder="dungeon_connector">
-                </div>
-
-                <!-- BIOME SECTION - REPLACED -->
-                <div class="form-group">
-                    <label>Biome Filters</label>
-                    <div class="biome-tabs">
-                        <button type="button" class="biome-tab active" data-tab="include">🌿 <span data-i18n="include_biomes">Include Biomes</span></button>
-                        <button type="button" class="biome-tab" data-tab="exclude">🚫 <span data-i18n="exclude_biomes">Exclude Biomes</span></button>
-                    </div>
-                    <div id="include-biome-panel" class="biome-panel active">
-                        <input type="text" id="include-biome-search" data-i18n-placeholder="search_biome_ph" placeholder="🔍 Tìm kiếm biome..."
-                            class="biome-search">
-                        <div id="include-biome-grid" class="biome-grid"></div>
-                        <div class="selected-biomes">
-                            <span class="selected-label" data-i18n="selected_include">Đã chọn (include): </span>
-                            <span id="include-selected-list" data-i18n="not_selected">(chưa chọn)</span>
-                        </div>
-                    </div>
-                    <div id="exclude-biome-panel" class="biome-panel">
-                        <input type="text" id="exclude-biome-search" data-i18n-placeholder="search_biome_ph" placeholder="🔍 Tìm kiếm biome..."
-                            class="biome-search">
-                        <div id="exclude-biome-grid" class="biome-grid"></div>
-                        <div class="selected-biomes">
-                            <span class="selected-label" data-i18n="selected_exclude">Đã chọn (exclude): </span>
-                            <span id="exclude-selected-list" data-i18n="not_selected">(chưa chọn)</span>
-                        </div>
-                    </div>
-                    <div class="biome-group-tabs">
-                        <button type="button" class="biome-group-tab active" data-group="include-groups">🌲 <span data-i18n="groups_include">Nhóm Include</span></button>
-                        <button type="button" class="biome-group-tab" data-group="exclude-groups">🚫 <span data-i18n="groups_exclude">Nhóm Exclude</span></button>
-                    </div>
-                    <div id="include-groups-panel" class="biome-group-panel active">
-                        <div id="include-biome-group-grid" class="biome-grid"></div>
-                    </div>
-                    <div id="exclude-groups-panel" class="biome-group-panel">
-                        <div id="exclude-biome-group-grid" class="biome-grid"></div>
-                    </div>
-                    <div class="help-text" data-i18n="biome_help_text">Chọn biome bao gồm (sẽ tạo điều kiện any_of) và biome loại trừ (operator !=).
-                    </div>
-                </div>
-
-                <div class="step-nav">
-                    <button class="btn-prev" data-prev="1" data-i18n="prev_button">← Quay lại</button>
-                    <button class="btn-next" data-next="3" data-i18n="next_button">Tiếp theo →</button>
-                </div>
-            </div>
-
-            <!-- STEP 3: Structure Set -->
-            <div class="step-content" id="step3" style="display:none;">
-                <h2>🗺️ <span data-i18n="config_structure_set">Cấu hình Structure Set (sinh sản)</span></h2>
-                <div class="form-group">
-                    <label data-i18n="set_id_label">ID bộ cấu trúc (tự động sinh)</label>
-                    <input type="text" id="set-id" placeholder="myaddon:my_set">
-                    <div class="field-error" data-for="set-id"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label data-i18n="spacing_label">Spacing (chunks)</label>
-                        <input type="number" id="spacing" value="32" min="1">
-                        <div class="field-error" data-for="spacing"></div>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="separation_label">Separation (chunks)</label>
-                        <input type="number" id="separation" value="16" min="1">
-                        <div class="field-error" data-for="separation"></div>
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="spread_type_label">Spread Type</label>
-                        <select id="spread-type">
-                            <option value="linear">linear</option>
-                            <option value="triangle">triangle</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="salt_label">Salt (seed)</label>
-                    <div class="inline-group">
-                        <input type="number" id="salt-value" data-i18n-placeholder="salt_ph" placeholder="Để trống auto">
-                        <label><input type="checkbox" id="salt-auto" checked> <span data-i18n="auto_generate">Auto-generate</span></label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="structures_in_set_label">Các cấu trúc trong set (thường chỉ 1)</label>
-                    <div id="structures-list">
-                        <div class="structure-item">
-                            <input type="text" class="struct-ref" placeholder="myaddon:my_structure" value="">
-                            <input type="number" class="struct-weight" placeholder="Weight" value="1" min="1">
-                            <button type="button" class="remove-struct" style="display:none;">✖</button>
-                        </div>
-                    </div>
-                    <button id="add-structure" class="btn-secondary" type="button" data-i18n="add_structure">+ <span data-i18n="add_structure_text">Thêm cấu trúc</span></button>
-                </div>
-
-                <div class="step-nav">
-                    <button class="btn-prev" data-prev="2" data-i18n="prev_button">← Quay lại</button>
-                    <button class="btn-next" data-next="4" data-i18n="next_button">Tiếp theo →</button>
-                </div>
-            </div>
-
-            <!-- STEP 4: Preview & Export -->
-            <div class="step-content" id="step4" style="display:none;">
-                <h2>📄 <span data-i18n="preview_and_download">Xem trước & Tải về</span></h2>
-                <div id="preview-files" class="file-list">
-                    <!-- Các file sẽ được tạo động bằng JS -->
-                </div>
-                <div class="action-buttons">
-                    <button id="copy-all-json" class="btn-secondary" data-i18n="copy_all_json">📋 <span data-i18n="copy_all_json_text">Copy all JSON</span></button>
-                    <button id="download-zip" class="btn-primary" data-i18n="download_zip">⬇️ <span data-i18n="download_zip_text">Tải toàn bộ (ZIP)</span></button>
-                </div>
-                <div id="validation-errors" class="error-box" style="display:none;"></div>
-                <div id="json-preview" style="display:none;">
-                    <h3 data-i18n="json_preview">JSON preview</h3>
-                    <pre id="json-content"></pre>
-                    <button id="close-preview" data-i18n="close_button">Đóng</button>
-                </div>
-                <div class="step-nav">
-                    <button class="btn-prev" data-prev="3" data-i18n="prev_button">← Quay lại</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PROCESSOR BUILDER MODE -->
-        <div class="processor-builder mode-processor" id="processor-mode">
-            <div class="processor-header">
-                <h2>⚙️ <span data-i18n="processor_list_builder">Processor List Builder</span></h2>
-                <p data-i18n="processor_list_desc">Tạo danh sách xử lý block tùy chỉnh (minecraft:processor_list)</p>
-            </div>
-
-            <div class="processor-form">
-                <div class="form-group">
-                    <label data-i18n="processor_id_label">Processor List Identifier</label>
-                    <input type="text" id="processor-id" data-i18n-placeholder="processor_id_ph" placeholder="myaddon:custom_processors">
-                </div>
-
-                <div class="form-group">
-                    <label data-i18n="processor_type_label">Processor Type</label>
-                    <select id="processor-type-select">
-                        <option value="" data-i18n="select_processor">-- Chọn loại processor --</option>
-                        <option value="minecraft:block_ignore" data-i18n="block_ignore_opt">🚫 Block Ignore (bỏ qua block)</option>
-                        <option value="minecraft:protected_blocks" data-i18n="protected_blocks_opt">🛡️ Protected Blocks (bảo vệ block)</option>
-                        <option value="minecraft:rule" data-i18n="rule_opt">📋 Rule (quy tắc thay thế)</option>
-                        <option value="minecraft:capped" data-i18n="capped_opt">🔒 Capped (giới hạn áp dụng)</option>
-                    </select>
-                </div>
-
-                <!-- Block Ignore Form -->
-                <div id="form-block-ignore" class="processor-type-form" style="display:none;">
-                    <h3>🚫 <span data-i18n="block_ignore_title">Block Ignore</span></h3>
-                    <p data-i18n="block_ignore_desc">Bỏ qua các block khi đặt cấu trúc (block này sẽ giữ nguyên từ thế giới)</p>
-                    <div class="form-group">
-                        <label data-i18n="block_list_label">Danh sách block (mỗi dòng một block)</label>
-                        <textarea id="block-ignore-list"
-                            placeholder="minecraft:stone&#10;minecraft:cobblestone&#10;minecraft:gravel"
-                            rows="4"></textarea>
-                    </div>
-                    <button id="btn-add-block-ignore" class="btn-primary" data-i18n="add_block_ignore">+ <span data-i18n="add_block_ignore_text">Thêm Block Ignore</span></button>
-                </div>
-
-                <!-- Protected Blocks Form -->
-                <div id="form-protected-blocks" class="processor-type-form" style="display:none;">
-                    <h3>🛡️ <span data-i18n="protected_blocks_title">Protected Blocks</span></h3>
-                    <p data-i18n="protected_blocks_desc">Bảo vệ các block nhất định khỏi bị thay thế</p>
-                    <div class="form-group">
-                        <label data-i18n="block_tag_label">Block Tag (vd: #minecraft:wooden_doors)</label>
-                        <input type="text" id="protected-tag" placeholder="#minecraft:leaves">
-                    </div>
-                    <button id="btn-add-protected" class="btn-primary" data-i18n="add_protected">+ <span data-i18n="add_protected_text">Thêm Protected Blocks</span></button>
-                </div>
-
-                <!-- Rule Form -->
-                <div id="form-rule" class="processor-type-form" style="display:none;">
-                    <h3>📋 <span data-i18n="rule_title">Rule (Quy tắc thay thế)</span></h3>
-                    <p data-i18n="rule_desc">Tạo quy tắc để thay thế block theo điều kiện</p>
-
-                    <!-- Output State -->
-                    <div class="form-group">
-                        <label data-i18n="output_block_label">Output Block (block thay thế)</label>
-                        <div class="form-row">
-                            <input type="text" id="rule-output-block" placeholder="minecraft:dirt" required>
-                            <button type="button" id="btn-output-states" class="btn-secondary" data-i18n="block_states_btn">⚙️ <span data-i18n="block_states_text">Block States</span></button>
-                        </div>
-                        <div id="rule-output-states-editor" class="collapsible" style="display:none;"></div>
-                    </div>
-
-                    <!-- Input Predicate -->
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="rule-has-input-pred"> <span data-i18n="input_predicate">Input Predicate (block trong structure)</span>
-                        </label>
-                    </div>
-                    <div id="rule-input-predicate" class="predicate-editor" style="display:none;">
+                <div class="form-section">
+                    <h3>Kích thước & Giới hạn</h3>
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label data-i18n="input_pred_type_label">Input Predicate Type</label>
-                            <select id="rule-input-type">
-                                <option value="minecraft:always_true">always_true</option>
-                                <option value="minecraft:block_match">block_match</option>
-                                <option value="minecraft:random_block_match">random_block_match</option>
-                                <option value="minecraft:blockstate_match">blockstate_match</option>
-                                <option value="minecraft:random_blockstate_match">random_blockstate_match</option>
-                                <option value="minecraft:tag_match">tag_match</option>
+                            <label>Max Distance (horizontal)</label>
+                            <input type="number" name="max_distance_h" value="80" min="1" max="128">
+                        </div>
+                        <div class="form-group">
+                            <label>Max Distance (vertical)</label>
+                            <input type="number" name="max_distance_v" value="80" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Dimension Padding (top)</label>
+                            <input type="number" name="dim_padding_top" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Dimension Padding (bottom)</label>
+                            <input type="number" name="dim_padding_bottom" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Liquid Settings</label>
+                            <select name="liquid_settings">
+                                <option value="apply_waterlogging">apply_waterlogging</option>
+                                <option value="ignore_waterlogging">ignore_waterlogging</option>
                             </select>
                         </div>
-                        <div id="rule-input-params"></div>
                     </div>
-
-                    <!-- Location Predicate -->
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="rule-has-location-pred"> <span data-i18n="location_predicate">Location Predicate (block trong thế giới)</span>
-                        </label>
-                    </div>
-                    <div id="rule-location-predicate" class="predicate-editor" style="display:none;">
-                        <div class="form-group">
-                            <label data-i18n="location_pred_type_label">Location Predicate Type</label>
-                            <select id="rule-location-type">
-                                <option value="minecraft:always_true">always_true</option>
-                                <option value="minecraft:block_match">block_match</option>
-                                <option value="minecraft:random_block_match">random_block_match</option>
-                                <option value="minecraft:blockstate_match">blockstate_match</option>
-                                <option value="minecraft:random_blockstate_match">random_blockstate_match</option>
-                                <option value="minecraft:tag_match">tag_match</option>
-                            </select>
-                        </div>
-                        <div id="rule-location-params"></div>
-                    </div>
-
-                    <!-- Position Predicate -->
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="rule-has-position-pred"> <span data-i18n="position_predicate">Position Predicate (khoảng cách từ gốc)</span>
-                        </label>
-                    </div>
-                    <div id="rule-position-predicate" class="predicate-editor" style="display:none;">
-                        <div class="form-group">
-                            <label data-i18n="position_pred_type_label">Position Predicate Type</label>
-                            <select id="rule-position-type">
-                                <option value="minecraft:always_true">always_true</option>
-                                <option value="minecraft:axis_aligned_linear_pos">axis_aligned_linear_pos</option>
-                            </select>
-                        </div>
-                        <div id="rule-position-params" style="display:none;">
-                            <div class="form-group">
-                                <label data-i18n="axis_label">Axis (x, y, hoặc z)</label>
-                                <select id="rule-position-axis">
-                                    <option value="" data-i18n="not_selected_opt">-- Không chọn --</option>
-                                    <option value="x">X</option>
-                                    <option value="y">Y</option>
-                                    <option value="z">Z</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label data-i18n="min_chance_label">Min Chance (0.0-1.0)</label>
-                                <input type="number" id="rule-position-min-chance" value="0" min="0" max="0.999"
-                                    step="0.1">
-                            </div>
-                            <div class="form-group">
-                                <label data-i18n="max_chance_label">Max Chance (0.0-1.0)</label>
-                                <input type="number" id="rule-position-max-chance" value="1" min="0.001" max="1"
-                                    step="0.1">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Block Entity Modifier -->
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="rule-has-modifier"> <span data-i18n="block_entity_modifier">Block Entity Modifier (loot table)</span>
-                        </label>
-                    </div>
-                    <div id="rule-block-entity" class="predicate-editor" style="display:none;">
-                        <div class="form-group">
-                            <label data-i18n="modifier_type_label">Modifier Type</label>
-                            <select id="rule-modifier-type">
-                                <option value="minecraft:passthrough">passthrough (không chỉnh sửa)</option>
-                                <option value="minecraft:append_loot">append_loot (thêm loot table)</option>
-                            </select>
-                        </div>
-                        <div id="rule-modifier-loot" style="display:none;">
-                            <div class="form-group">
-                                <label data-i18n="loot_table_label">Loot Table Path</label>
-                                <input type="text" id="rule-loot-path" data-i18n-placeholder="loot_table_ph" placeholder="loot_tables/blocks/ore.json">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button id="btn-add-rule" class="btn-primary" data-i18n="create_rule">✅ <span data-i18n="create_rule_text">Tạo Rule</span></button>
-                </div>
-
-                <!-- Capped Form -->
-                <div id="form-capped" class="processor-type-form" style="display:none;">
-                    <h3>🔒 <span data-i18n="capped_title">Capped (Giới hạn)</span></h3>
-                    <p data-i18n="capped_desc">Giới hạn số lần áp dụng một processor khác</p>
-                    <div class="form-group">
-                        <label data-i18n="limit_label">Limit (số lần tối đa)</label>
-                        <input type="number" id="capped-limit" value="10" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="delegate_processor_label">Delegate Processor Type</label>
-                        <select id="capped-delegate">
-                            <option value="minecraft:rule">Rule</option>
-                            <option value="minecraft:block_ignore">Block Ignore</option>
-                            <option value="minecraft:protected_blocks">Protected Blocks</option>
-                        </select>
-                    </div>
-                    <button id="btn-add-capped" class="btn-primary" data-i18n="add_capped">+ <span data-i18n="add_capped_text">Thêm Capped</span></button>
-                </div>
-
-                <div id="processors-list" class="processors-list"></div>
-
-                <div class="action-buttons">
-                    <button id="processor-preview-btn" class="btn-secondary" data-i18n="preview_btn">👁️ <span data-i18n="preview_text">Xem trước</span></button>
-                    <button id="processor-download-btn" class="btn-primary" data-i18n="download_processor">⬇️ <span data-i18n="download_processor_text">Tải Processor</span></button>
-                </div>
-
-                <div id="processor-errors" class="error-box" style="display:none;"></div>
-                <div id="processor-preview-div" class="json-preview" style="display:none;">
-                    <h3 data-i18n="json_preview">JSON Preview</h3>
-                    <pre id="processor-json-content"></pre>
-                    <button id="processor-close-preview" data-i18n="close_button">Đóng</button>
                 </div>
             </div>
-        </div>
+
+            <!-- TAB 2: TEMPLATE POOLS -->
+            <div id="tab2" class="tab-content">
+                <div class="pool-tabs">
+                    <button type="button" class="pool-tab-btn active" data-pool="main">Main Pool</button>
+                    <button type="button" class="pool-tab-btn" data-pool="fallback">Fallback Pool</button>
+                </div>
+
+                <!-- Main Pool -->
+                <div id="main-pool" class="pool-content active">
+                    <div class="form-group">
+                        <label>Pool ID <i class="fas fa-info-circle tooltip-icon" data-tooltip="Để trống sẽ tự tạo theo namespace:struct_name_pool"></i></label>
+                        <input type="text" name="pool_id" placeholder="myaddon:my_dungeon_pool">
+                    </div>
+                    <div class="elements-list" id="main-elements">
+                        <div class="element-item">
+                            <input type="text" class="location" placeholder="Location (vd: ruin/hallway)" required>
+                            <input type="number" class="weight" placeholder="Weight (1-200)" value="1" min="1" max="200">
+                            <input type="text" class="processors" placeholder="Processor ID (vd: minecraft:empty)">
+                            <select class="projection">
+                                <option value="rigid">rigid</option>
+                                <option value="terrain_matching">terrain_matching</option>
+                            </select>
+                            <button type="button" class="remove-element-btn"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-element-btn"><i class="fas fa-plus"></i> Thêm element</button>
+                </div>
+
+                <!-- Fallback Pool (ẩn nếu chưa có ID) -->
+                <div id="fallback-pool" class="pool-content">
+                    <div class="form-group">
+                        <label>Fallback Pool ID <i class="fas fa-info-circle tooltip-icon" data-tooltip="Nhập để kích hoạt fallback pool"></i></label>
+                        <input type="text" name="fallback_pool_id" placeholder="myaddon:dead_ends">
+                    </div>
+                    <div class="elements-list" id="fallback-elements">
+                        <div class="element-item">
+                            <input type="text" class="location" placeholder="Location">
+                            <input type="number" class="weight" placeholder="Weight" value="1" min="1" max="200">
+                            <input type="text" class="processors" placeholder="Processor ID">
+                            <select class="projection">
+                                <option value="rigid">rigid</option>
+                                <option value="terrain_matching">terrain_matching</option>
+                            </select>
+                            <button type="button" class="remove-element-btn"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                    <button type="button" class="add-element-btn"><i class="fas fa-plus"></i> Thêm element</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: NÂNG CAO -->
+            <div id="tab3" class="tab-content">
+                <div class="form-section">
+                    <h3>Structure Set</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Spacing (chunks)</label>
+                            <input type="number" name="spacing" value="32" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Separation (chunks)</label>
+                            <input type="number" name="separation" value="16" min="1">
+                            <span class="validation-error" data-for="separation"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Salt <i class="fas fa-info-circle tooltip-icon" data-tooltip="Để trống tự sinh ngẫu nhiên"></i></label>
+                            <input type="number" name="salt">
+                            <button type="button" id="random-salt" class="small-btn">Random</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Spread Type</label>
+                            <select name="spread_type">
+                                <option value="linear">linear</option>
+                                <option value="triangular">triangular</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Pool Aliases <i class="fas fa-info-circle tooltip-icon" data-tooltip="Dùng để tạo theme cho cấu trúc"></i></h3>
+                    <div id="pool-aliases-list"></div>
+                    <button type="button" id="add-pool-alias" class="small-btn"><i class="fas fa-plus"></i> Thêm Pool Alias</button>
+                </div>
+
+                <div class="form-section">
+                    <h3>Processors <i class="fas fa-info-circle tooltip-icon" data-tooltip="Thay đổi block khi đặt cấu trúc"></i></h3>
+                    <div id="processors-list"></div>
+                    <button type="button" id="add-processor" class="small-btn"><i class="fas fa-plus"></i> Thêm Processor List</button>
+                    <details>
+                        <summary>Hoặc nhập trực tiếp JSON</summary>
+                        <textarea id="processors-json" rows="6" placeholder='[{"identifier":"myaddon:my_processor","processors":[{"processor_type":"minecraft:rule","rules":[...]}]}]'></textarea>
+                    </details>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button type="submit" class="generate-btn"><i class="fas fa-download"></i> Tạo file và tải về</button>
+                <button type="button" id="reset-btn" class="reset-btn"><i class="fas fa-undo-alt"></i> Reset</button>
+            </div>
+            <div id="loading" style="display:none;"><i class="fas fa-spinner fa-pulse"></i> Đang xử lý...</div>
+            <div id="error" class="error-message"></div>
+        </form>
     </div>
 
-    <script src="{{ url_for('static', filename='i18n.js') }}"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-
 </html>
